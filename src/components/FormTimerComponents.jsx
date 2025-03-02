@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useLocal from "@/hooks/useLocal";
+import { useTimer } from "@/context/TimerContext";
 
 const formTimerSchema = z.object({
     hours: z.string().nonempty("Campo obrigatório"),
@@ -13,7 +13,7 @@ const formTimerSchema = z.object({
 export default function FormTimerComponents({ onClose }) {
   const { 
     createNewTime
-  } = useLocal()
+  } = useTimer()
   const {
     register,
     handleSubmit,
@@ -23,7 +23,6 @@ export default function FormTimerComponents({ onClose }) {
   });
 
   const handleSubmitTimer = (data) => {
-    console.log(data);
     onClose(); // Fecha o formulário após envio
     const createdNewTimer = createNewTime(data);
     console.log(createdNewTimer);
@@ -72,7 +71,7 @@ export default function FormTimerComponents({ onClose }) {
             />
             {errors.seconds && <span>{errors.seconds.message}</span>}
         </div>
-        <div className="flex flex-col justify-center gap-2 mt-5">
+        <div className="flex flex-col justify-center gap-2">
             <label htmlFor="ciclos" className="text-xl">Ciclos</label>
             <input
                 type="number"
@@ -85,7 +84,7 @@ export default function FormTimerComponents({ onClose }) {
         <div>
             <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-5 cursor-pointer"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
             >
                 Enviar
             </button>

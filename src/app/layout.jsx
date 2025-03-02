@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { TimerProvider } from "@/context/TimerContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,7 +21,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased bg-gradient-to-r from-slate-900 to-slate-700 text-white`}
       >
-        {children}
+        <TimerProvider>{children}</TimerProvider>
       </body>
     </html>
   );

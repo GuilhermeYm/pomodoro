@@ -1,11 +1,20 @@
 "use client";
 
-import useLocal from "@/hooks/useLocal";
 import FormTimerComponents from "./FormTimerComponents";
 import { useState } from "react";
+import { useTimer } from "@/context/TimerContext";
 
 export default function WatchPomodoroComponents() {
-  const { isTimerRunning, intervalId } = useLocal();
+  const {
+    isTimerRunning,
+    currentCycle,
+    totalCycles,
+    cycleType,
+    hours,
+    minutes,
+    seconds,
+    setIsTimerRunning,
+  } = useTimer();
   const [showFormTimer, setShowFormTimer] = useState(false);
 
   const handleTimer = () => {
@@ -26,15 +35,15 @@ export default function WatchPomodoroComponents() {
       >
         <article className="grid grid-cols-3 flex-1 mt-10 gap-10 text-center text-4xl font-bold">
           <section className="flex flex-col items-center ">
-            <div>00</div>
+            <div>{hours}</div>
             <div>Horas</div>
           </section>
           <section className="flex flex-col items-center">
-            <div>00</div>
+            <div>{minutes}</div>
             <div>Minutos</div>
           </section>
           <section className="flex flex-col items-center">
-            <div>00</div>
+            <div>{seconds}</div>
             <div>Segundos</div>
           </section>
         </article>
@@ -49,13 +58,28 @@ export default function WatchPomodoroComponents() {
           <button
             className="bg-red-500 hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-full mt-10 ml-5"
             disabled={!isTimerRunning}
+            onClick={() => setIsTimerRunning(!isTimerRunning)}
           >
             Parar
           </button>
         </div>
-        <div className="flex items-center justify-center gap-2 mt-2">
-          <p className="font-bold">Ciclo:</p>
-          <span>{intervalId ? intervalId : "00"}</span>
+        <div className="flex items-center justify-center gap-2 mt-2 text-center">
+          {isTimerRunning ? (
+            <>
+              <p className="font-bold">
+                Ciclos:
+                <span className="font-normal">
+                  {currentCycle} de {totalCycles}
+                </span>
+              </p>
+              <p>|</p>
+              <p className="font-bold">Tipo de ciclo: {cycleType}</p>
+            </>
+          ) : (
+            <>
+              <p>Clique no botão iniciar para começar o ciclo. Você parou no ciclo {currentCycle}</p>
+            </>
+          )}
         </div>
       </div>
 
