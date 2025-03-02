@@ -9,13 +9,19 @@ export default function useLocal() {
   const [seconds, setSeconds] = useState(0);
   const [intervalId, setIntervalId] = useState(0);
 
-  const createNewTime = () => {
+  const createNewTime = (data) => {
     const newTime = new Date();
     console.log(newTime);
     newTime.setHours(hours);
     newTime.setMinutes(minutes);
     newTime.setSeconds(seconds);
-    return newTime;
+    const newObject = { 
+      hours: newTime.getHours(),
+      minutes: newTime.getMinutes(),
+      seconds: newTime.getSeconds(),
+      
+    }
+    return newObject;
   };
 
   return {

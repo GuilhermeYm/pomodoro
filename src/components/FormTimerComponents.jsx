@@ -1,15 +1,19 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useLocal from "@/hooks/useLocal";
 
 const formTimerSchema = z.object({
     hours: z.string().nonempty("Campo obrigatório"),
     minutes: z.string().nonempty("Campo obrigatório"),
     seconds: z.string().nonempty("Campo obrigatório"),
-    ciclos: z.number()
+    ciclos: z.string()
 })
 
 export default function FormTimerComponents({ onClose }) {
+  const { 
+    createNewTime
+  } = useLocal()
   const {
     register,
     handleSubmit,
@@ -21,7 +25,8 @@ export default function FormTimerComponents({ onClose }) {
   const handleSubmitTimer = (data) => {
     console.log(data);
     onClose(); // Fecha o formulário após envio
-    return console.log("Formulário enviado");
+    const createdNewTimer = createNewTime(data);
+    console.log(createdNewTimer);
   };
 
   return (
