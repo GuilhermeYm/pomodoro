@@ -18,14 +18,14 @@ export function TimerProvider({ children }) {
   const [isWork, setIsWork] = useState(true);
 
   // Novos estados para o ciclo
-  const [currentCycle, setCurrentCycle] = useState(1); // Ciclo atual
+  const [currentCycle, setCurrentCycle] = useState(0); // Ciclo atual
   const [totalCycles, setTotalCycles] = useState(0); // Total de ciclos
   const [cycleType, setCycleType] = useState("trabalho"); // Tipo de ciclo: trabalho ou descanso
 
   // Configurações padrão de tempo para cada tipo de ciclo
   const cycleConfigs = {
     trabalho: { hours: hours, minutes: minutes, seconds: seconds },
-    "intervalo-curto": { hours: 0, minutes: 1, seconds: 0 },
+    "intervalo-curto": { hours: 0, minutes: 0, seconds: 2 },
     "intervalo-longo": { hours: 0, minutes: 1, seconds: 0 },
   };
 
@@ -55,7 +55,7 @@ export function TimerProvider({ children }) {
   const advanceToNextCyle = () => {
     // Qual é o próximo tipo de ciclo?
     let nextCycleType;
-    let nextCycle;
+    let nextCycle = currentCycle;
 
     // Se o tipo de ciclo for trabalho, avança para algum tipo de intervalo
     if (cycleType === "trabalho") {
@@ -86,6 +86,10 @@ export function TimerProvider({ children }) {
       }
     }
 
+    console.log("Ciclo atual", currentCycle);
+    console.log("O próximo ciclo", nextCycle);
+    console.log("Tipo de ciclo atual", cycleType);
+    console.log("O próximo tipo de ciclo", nextCycleType);
     // Configura o próximo ciclo
     setCycleType(nextCycleType);
     setCurrentCycle(nextCycle);
@@ -99,8 +103,6 @@ export function TimerProvider({ children }) {
 
   // Efeito para gerenciar o timer
   useEffect(() => {
-    console.log(timerRef.current);
-    console.log(timerRef);
     // Se tiver algum timer rodando, limpa ele
     if (timerRef.current) {
       clearInterval(timerRef.current);

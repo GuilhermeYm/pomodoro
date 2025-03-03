@@ -73,11 +73,24 @@ export default function WatchPomodoroComponents() {
                 </span>
               </p>
               <p>|</p>
-              <p className="font-bold">Tipo de ciclo: {cycleType}</p>
+              <p className="font-bold">
+                Tipo de ciclo:
+                {cycleType === "trabalho" ? (
+                  <span className="text-green-500">Trabalho</span>
+                ) : cycleType === "intervalo-curto" ? (
+                  <span className="text-blue-500">Descanso Curto</span>
+                ) : (
+                  <span className="text-purple-500">Descanso Longo</span>
+                )}
+              </p>
             </>
           ) : (
             <>
-              <p>Clique no botão iniciar para começar o ciclo. Você parou no ciclo {currentCycle}</p>
+              <p>
+                {currentCycle > 0
+                  ? `Você parou no ciclo ${currentCycle}`
+                  : "Clique no botão iniciar para começar o ciclo"}
+              </p>
             </>
           )}
         </div>
