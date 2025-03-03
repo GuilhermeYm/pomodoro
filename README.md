@@ -7,11 +7,13 @@ Pomodoro é uma técnica de gerenciamento de tempo desenvolvida por Francesco Ci
 ### Como funciona
 
 1. Escolha uma tarefa para ser realizada
-2. Configure o temporizador para 25 minutos
+2. Configure o temporizador
 3. Trabalhe na tarefa até o timer tocar
-4. Faça uma pausa curta (5 minutos)
-5. A cada quatro "pomodoros", faça uma pausa mais longa (15-30 minutos)
+4. Faça uma pausa curta 
 
-Esta técnica visa aumentar a produtividade e o foco, reduzindo interrupções e gerenciando melhor o tempo de trabalho e descanso.
+Depois da pausa, voltará para a tarefa. Você poderá definir ciclos de trabalho e ciclos de descanso.
 
-## O que eu usei
+## Objetivo da Ténica
+
+Esta técnica visa aumentar a produtividade e o foco, reduzindo interrupções e gerenciando melhor o tempo de trabalho e descanso. Sendo que durante o descanso, você pode usar o celular, conversas, entre outras coisas, mas quando voltar para o trabalho, você devera voltar ao foco.
+![image](https://github.com/user-attachments/assets/46b48521-4b16-45e8-b87a-28fd0231748b)
