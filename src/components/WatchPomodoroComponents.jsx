@@ -13,6 +13,7 @@ export default function WatchPomodoroComponents() {
     hours,
     minutes,
     seconds,
+    isWork,
     setIsTimerRunning,
   } = useTimer();
   const [showFormTimer, setShowFormTimer] = useState(false);
@@ -34,18 +35,26 @@ export default function WatchPomodoroComponents() {
         className={showFormTimer ? "filter blur-sm pointer-events-none" : ""}
       >
         <article className="grid grid-cols-3 flex-1 mt-10 gap-10 text-center text-4xl font-bold">
-          <section className="flex flex-col items-center ">
-            <div>{hours}</div>
-            <div>Horas</div>
-          </section>
-          <section className="flex flex-col items-center">
-            <div>{minutes}</div>
-            <div>Minutos</div>
-          </section>
-          <section className="flex flex-col items-center">
-            <div>{seconds}</div>
-            <div>Segundos</div>
-          </section>
+          {isWork ? (
+            <>
+              <section className="flex flex-col items-center ">
+                <div>{hours}</div>
+                <div>Horas</div>
+              </section>
+              <section className="flex flex-col items-center">
+                <div>{minutes}</div>
+                <div>Minutos</div>
+              </section>
+              <section className="flex flex-col items-center">
+                <div>{seconds}</div>
+                <div>Segundos</div>
+              </section>
+            </>
+          ) : (
+            <div className="flex min-w-full justify-center items-center col-span-3">
+              <p className="bold text-center">Você está em um intervalo</p>
+            </div>
+          )}
         </article>
         <div className="flex items-center justify-center text-center">
           <button

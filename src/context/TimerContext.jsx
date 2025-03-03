@@ -13,20 +13,34 @@ export function TimerProvider({ children }) {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const timerRef = useRef(null);
   const [isInterval, setIsInterval] = useState(false);
   const [isWork, setIsWork] = useState(true);
+  const timerRef = useRef(null);
 
   // Novos estados para o ciclo
   const [currentCycle, setCurrentCycle] = useState(0); // Ciclo atual
   const [totalCycles, setTotalCycles] = useState(0); // Total de ciclos
   const [cycleType, setCycleType] = useState("trabalho"); // Tipo de ciclo: trabalho ou descanso
+  const [hoursShortInterval, setHoursShortInterval] = useState(0);
+  const [minutesShortInterval, setMinutesShortInterval] = useState(5);
+  const [secondsShortInterval, setSecondsShortInterval] = useState(0);
+  const [hoursLongInterval, setHoursLongInterval] = useState(0);
+  const [minutesLongInterval, setMinutesLongInterval] = useState(15);
+  const [secondsLongInterval, setSecondsLongInterval] = useState(0);
 
   // Configurações padrão de tempo para cada tipo de ciclo
   const cycleConfigs = {
     trabalho: { hours: hours, minutes: minutes, seconds: seconds },
-    "intervalo-curto": { hours: 0, minutes: 0, seconds: 2 },
-    "intervalo-longo": { hours: 0, minutes: 1, seconds: 0 },
+    "intervalo-curto": {
+      hours: hoursShortInterval,
+      minutes: minutesShortInterval,
+      seconds: secondsShortInterval,
+    },
+    "intervalo-longo": {
+      hours: hoursLongInterval,
+      minutes: minutesLongInterval,
+      seconds: secondsLongInterval,
+    },
   };
 
   // Função para criar um novo timer
@@ -38,9 +52,15 @@ export function TimerProvider({ children }) {
 
     // Configuração dos ciclos
     setCurrentCycle(1);
-    setTotalCycles(Number(data.ciclos) || 4);
+    setTotalCycles(Number(data.ciclos));
     setCycleType("trabalho");
-
+    // Setando os valores dos intervalos
+    setHoursLongInterval(Number(data.hoursLongInterval) || 0);
+    setMinutesLongInterval(Number(data.minutesLongInterval) || 0);
+    setSecondsLongInterval(Number(data.secondsLongInterval) || 0);
+    setHoursShortInterval(Number(data.hoursShortInterval) || 0);
+    setMinutesShortInterval(Number(data.minutesShortInterval) || 0);
+    setSecondsShortInterval(Number(data.secondsShortInterval) || 0);
     return true;
   };
 
@@ -62,27 +82,27 @@ export function TimerProvider({ children }) {
       // Se estiver no último ciclo, avança para o intervalo longo
       if (currentCycle === totalCycles) {
         nextCycleType = "intervalo-longo";
-        setIsInterval(true);
         setIsWork(false);
+        setIsInterval(true);
       } // Se não for o último ciclo, o próximo clico será um intervalo curto
       else {
         nextCycleType = "intervalo-curto";
-        setIsInterval(true);
         setIsWork(false);
+        setIsInterval(true);
       }
     } else {
       // Se o tipo de ciclo for intervalo, avança para o próximo ciclo de trabalho
       nextCycleType = "trabalho";
       // Se o ciclo anterior foi um intervalo longo, reincia a contagem
       if (cycleType === "intervalo-longo") {
-        nextCycle = 1;
-        setIsInterval(false);
         setIsWork(true);
+        setIsInterval(false);
+        nextCycle = 1;
       } else {
         // Se não, avança para o próximo ciclo
         nextCycle = currentCycle + 1;
-        setIsInterval(false);
         setIsWork(true);
+        setIsInterval(false);
       }
     }
 
@@ -157,6 +177,19 @@ export function TimerProvider({ children }) {
       }, 1000); // Executa a cada um segundo
     }
 
+    console.log(
+      "Números do intervalo longo",
+      hoursLongInterval,
+      minutesLongInterval,
+      secondsLongInterval
+    );
+    console.log(
+      "Números do intervalo curto",
+      hoursShortInterval,
+      minutesShortInterval,
+      secondsShortInterval
+    );
+
     // Função de limpeza para evitar memory leaks
     return () => {
       if (timerRef.current) {
@@ -176,6 +209,8 @@ export function TimerProvider({ children }) {
     resetTimer,
     currentCycle,
     totalCycles,
+    isWork,
+    isInterval,
     cycleType,
   };
 
