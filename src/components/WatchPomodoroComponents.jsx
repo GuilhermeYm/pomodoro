@@ -51,8 +51,9 @@ export default function WatchPomodoroComponents() {
               </section>
             </>
           ) : (
-            <div className="flex min-w-full justify-center items-center col-span-3">
-              <p className="bold text-center">Você está em um intervalo</p>
+            <div className="flex flex-col min-w-full justify-center items-center col-span-3">
+              <p className="font-bold text-center">Você está em um intervalo</p>
+              <p className="font-normal">{hours}/{minutes}/{seconds}</p>
             </div>
           )}
         </article>

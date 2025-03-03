@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { set } from "zod";
 
 // 1. Criar contexto
 const TimerContext = createContext({});
@@ -17,6 +18,11 @@ export function TimerProvider({ children }) {
   const [isWork, setIsWork] = useState(true);
   const timerRef = useRef(null);
 
+  // Ciclos de trabalho
+  const [workHours, setWorkHours] = useState(0);
+  const [workMinutes, setWorkMinutes] = useState(25);
+  const [workSeconds, setWorkSeconds] = useState(0);
+
   // Novos estados para o ciclo
   const [currentCycle, setCurrentCycle] = useState(0); // Ciclo atual
   const [totalCycles, setTotalCycles] = useState(0); // Total de ciclos
@@ -30,7 +36,7 @@ export function TimerProvider({ children }) {
 
   // Configurações padrão de tempo para cada tipo de ciclo
   const cycleConfigs = {
-    trabalho: { hours: hours, minutes: minutes, seconds: seconds },
+    trabalho: { hours: workHours, minutes: workMinutes, seconds: workSeconds },
     "intervalo-curto": {
       hours: hoursShortInterval,
       minutes: minutesShortInterval,
@@ -45,6 +51,11 @@ export function TimerProvider({ children }) {
 
   // Função para criar um novo timer
   const createNewTime = (data) => {
+    setWorkHours(Number(data.hours) || 0);
+    setWorkMinutes(Number(data.minutes) || 0);
+    setWorkSeconds(Number(data.seconds) || 0);
+
+    // Timer atual
     setHours(Number(data.hours) || 0);
     setMinutes(Number(data.minutes) || 0);
     setSeconds(Number(data.seconds) || 0);
@@ -105,11 +116,6 @@ export function TimerProvider({ children }) {
         setIsInterval(false);
       }
     }
-
-    console.log("Ciclo atual", currentCycle);
-    console.log("O próximo ciclo", nextCycle);
-    console.log("Tipo de ciclo atual", cycleType);
-    console.log("O próximo tipo de ciclo", nextCycleType);
     // Configura o próximo ciclo
     setCycleType(nextCycleType);
     setCurrentCycle(nextCycle);
@@ -120,83 +126,96 @@ export function TimerProvider({ children }) {
     setMinutes(nextConfig.minutes);
     setSeconds(nextConfig.seconds);
   };
-
   // Efeito para gerenciar o timer
   useEffect(() => {
-    // Se tiver algum timer rodando, limpa ele
+    // Função que gerencia a contagem regressiva
+    const tickTimer = () => {
+      setSeconds((prevSec) => {
+        // Se ainda temos segundos, apenas decremente um
+        if (prevSec > 0) {
+          return prevSec - 1;
+        }
+
+        // Se chegamos a zero segundos, precisamos verificar os minutos
+        setMinutes((prevMin) => {
+          if (prevMin > 0) {
+            return prevMin - 1; // Ainda temos minutos, decrementar um
+          }
+
+          // Se chegamos a zero minutos, verificamos as horas
+          setHours((prevHrs) => {
+            if (prevHrs > 0) {
+              return prevHrs - 1; // Ainda temos horas, decrementar uma
+            }
+
+            // Timer terminou completamente
+            handleTimerCompleted();
+            return 0;
+          });
+
+          return 59; // Redefine minutos para 59 quando decrementa uma hora
+        });
+
+        return 59; // Redefine segundos para 59 quando decrementa um minuto
+      });
+    };
+
+    // Função para lidar com o término do timer
+    const handleTimerCompleted = () => {
+      // Limpa o intervalo
+      if (timerRef.current) {
+        setHours(0);
+        setMinutes(0);
+        setSeconds(0);
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+
+      setIsTimerRunning(false);
+
+      // Notificação
+      if (Notification.permission === "granted") {
+        const message =
+          cycleType === "trabalho"
+            ? "Hora de descansar!"
+            : "Hora de voltar ao trabalho!";
+
+        new Notification("Ciclo concluído!", { body: message });
+      }
+
+      // Avança para o próximo ciclo após 3 segundos
+      setIsInterval(true);
+      setIsWork(false)
+      setTimeout(() => {
+        // Se for o último intervalo longo, reseta o timer
+        if (cycleType === "intervalo-longo" && currentCycle === totalCycles) {
+          resetTimer();
+        } else {
+          advanceToNextCyle();
+          setIsTimerRunning(true);
+        }
+      }, 3000);
+    };
+
+    // Limpa qualquer timer existente quando o estado de execução muda
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
 
-    // Se o timer estiver rodando, cria um intervalo para decrementar o tempo - Coração do código
+    // Inicia o timer apenas se estiver em execução
     if (isTimerRunning) {
-      timerRef.current = setInterval(() => {
-        // Lógica para decrementar o tempo. segundos -> minutos -> horas
-        if (seconds > 0) {
-          setSeconds((prev) => prev - 1);
-        } else if (minutes > 0) {
-          setMinutes((prev) => prev - 1);
-          setSeconds(59);
-        } else if (hours > 0) {
-          setHours((prev) => prev - 1);
-          setMinutes(59);
-          setSeconds(59);
-        } else {
-          // Timer terminou: limpa o intervalo, para o timer e envia notificação
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-          setIsTimerRunning(false);
-
-          // Notificação
-          if (Notification.permission === "granted") {
-            const message =
-              cycleType === "trabalho"
-                ? "Hora de descansar!"
-                : "Hora de voltar ao trabalho!";
-
-            new Notification("Ciclo concluído!", {
-              body: message,
-            });
-          }
-
-          // Avança para o próximo ciclo após 3 segundos
-          setTimeout(() => {
-            // Se for o último intervalo longo, reseta o timer
-            if (
-              cycleType === "intervalo-longo" &&
-              currentCycle === totalCycles
-            ) {
-              resetTimer();
-            } else {
-              advanceToNextCyle();
-              setIsTimerRunning(true);
-            }
-          }, 3000);
-        }
-      }, 1000); // Executa a cada um segundo
+      timerRef.current = setInterval(tickTimer, 1000);
     }
 
-    console.log(
-      "Números do intervalo longo",
-      hoursLongInterval,
-      minutesLongInterval,
-      secondsLongInterval
-    );
-    console.log(
-      "Números do intervalo curto",
-      hoursShortInterval,
-      minutesShortInterval,
-      secondsShortInterval
-    );
-
-    // Função de limpeza para evitar memory leaks
+    // Limpeza para evitar memory leaks quando o componente é desmontado
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
-  }, [isTimerRunning, hours, minutes, seconds]); // UseEffect será executado sempre que essas variáveis mudarem
+  }, [isTimerRunning]); // Mantém apenas o isTimerRunning como dependência
 
   // Valores que serão disponibilizados para toda a aplicação
   const value = {

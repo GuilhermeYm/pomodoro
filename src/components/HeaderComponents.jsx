@@ -6,7 +6,6 @@ export default function HeaderComponents() {
         <ul className="flex space-x-4">
           <li>Home</li>
           <li>Contato</li>
-          <li>Enviar uma imagem</li>
         </ul>
       </nav>
     </header>
